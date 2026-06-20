@@ -50,4 +50,4 @@ Built as a companion piece to a separate 3D Techfest submission, sharing the sam
 
 ## Credits
 
-Built by **Chirag** for Techfest, IIT Bombay — Web Development domain.
+Built by **Chirag** for Techfest, IIT Bombay — Web Development.
