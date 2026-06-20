@@ -45,7 +45,7 @@ start index.html
 
 ## Live Demo
 
-Url - chiragpoddar007/Cybrog-Landing-Page
+Url - http://chiragpoddar007.github.io/Cybrog-Landing-Page
 
 ## Design notes
 
