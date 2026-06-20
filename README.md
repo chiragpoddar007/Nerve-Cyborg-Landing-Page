@@ -38,7 +38,9 @@ No build step required — it's a single self-contained HTML file.
 
 
 git clone https://github.com/chiragpoddar007/nerve-cyborg-landing-page.git
+
 cd nerve-cyborg-landing-page
+
 start index.html
 
 
