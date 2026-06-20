@@ -45,7 +45,7 @@ start index.html
 
 ## Live Demo
 
-Url - http://chiragpoddar007.github.io/Cybrog-Landing-Page
+Url - http://chiragpoddar007.github.io/nerve-cyborg-landing-page
 
 ## Design notes
 
