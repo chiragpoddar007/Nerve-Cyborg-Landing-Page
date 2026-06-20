@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NERVE — Synthetic Augmentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#060708;
+    --bg-panel:#0c0e10;
+    --bg-panel-2:#101316;
+    --cyan:#5eead4;
+    --violet:#8b5cf6;
+    --copper:#c8895a;
+    --text:#e9eaeb;
+    --text-dim:#8b9197;
+    --line:#1c2024;
+    --grid:rgba(94,234,212,0.06);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:
+      linear-gradient(var(--grid) 1px, transparent 1px) 0 0/48px 48px,
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0/48px 48px,
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+  }
+  ::selection{background:var(--copper);color:#060708;}
+  a{color:inherit;text-decoration:none;}
+  a:focus-visible, button:focus-visible, input:focus-visible{
+    outline:2px solid var(--cyan);
+    outline-offset:3px;
+  }
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px clamp(20px,5vw,64px);
+    background:linear-gradient(to bottom, rgba(6,7,8,0.94), transparent);
+  }
+  .nav-brand{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700; font-size:17px; letter-spacing:0.04em;
+    display:flex; align-items:baseline; gap:8px;
+  }
+  .nav-brand .tm{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px; color:var(--copper);
+    letter-spacing:0.1em;
+  }
+  .nav-links{
+    display:flex; gap:clamp(16px,3vw,36px);
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px; letter-spacing:0.05em;
+    color:var(--text-dim);
+  }
+  .nav-links a{transition:color 0.2s;}
+  .nav-links a:hover{color:var(--cyan);}
+  @media (max-width:680px){ .nav-links{display:none;} }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    align-items:center;
+    gap:24px;
+    padding:140px clamp(20px,6vw,80px) 80px;
+  }
+  @media (max-width:860px){
+    .hero{grid-template-columns:1fr; padding-top:120px;}
+  }
+  .hero-copy .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px; letter-spacing:0.2em;
+    color:var(--copper);
+    text-transform:uppercase;
+    margin-bottom:20px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .hero-copy .eyebrow::before{
+    content:""; width:22px; height:1px; background:var(--copper);
+  }
+  .hero-copy h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(36px,5vw,62px);
+    line-height:1.08;
+    letter-spacing:-0.01em;
+    margin-bottom:24px;
+  }
+  .hero-copy h1 em{
+    font-style:normal;
+    color:var(--cyan);
+  }
+  .hero-copy p{
+    font-size:16px;
+    color:var(--text-dim);
+    line-height:1.7;
+    max-width:440px;
+    margin-bottom:34px;
+  }
+  .hero-ctas{display:flex; gap:14px; flex-wrap:wrap;}
+  .btn-primary{
+    padding:15px 28px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600; font-size:14px; letter-spacing:0.02em;
+    background:var(--cyan); color:#06070a;
+    border:none; border-radius:2px; cursor:pointer;
+    transition:transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 10px 26px -10px rgba(94,234,212,0.5);}
+  .btn-secondary{
+    padding:15px 28px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600; font-size:14px; letter-spacing:0.02em;
+    background:transparent; color:var(--text);
+    border:1px solid var(--line); border-radius:2px; cursor:pointer;
+    transition:border-color 0.2s, color 0.2s;
+  }
+  .btn-secondary:hover{border-color:var(--cyan); color:var(--cyan);}
+
+  .hero-spec-strip{
+    margin-top:48px;
+    display:flex; gap:36px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .hero-spec-strip div span{display:block;}
+  .hero-spec-strip .num{font-size:20px; color:var(--cyan); font-weight:500;}
+  .hero-spec-strip .label{font-size:10.5px; color:var(--text-dim); margin-top:4px; letter-spacing:0.05em;}
+
+  .hero-diagram{
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .hero-diagram svg{
+    width:100%; max-width:560px; height:auto;
+    overflow:visible;
+  }
+
+  /* ---------- SHARED SECTION ---------- */
+  section{
+    position:relative;
+    padding:clamp(64px,10vw,120px) clamp(20px,6vw,80px);
+    border-top:1px solid var(--line);
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px; letter-spacing:0.2em;
+    color:var(--violet);
+    text-transform:uppercase;
+    margin-bottom:14px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{ content:""; width:22px; height:1px; background:var(--violet); }
+  .section-title{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(26px,3.6vw,40px);
+    max-width:680px;
+    line-height:1.18;
+    margin-bottom:16px;
+  }
+  .section-desc{
+    font-size:15px;
+    color:var(--text-dim);
+    max-width:520px;
+    line-height:1.7;
+  }
+
+  /* ---------- PRODUCT LINE ---------- */
+  .product-grid{
+    margin-top:52px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+  @media (max-width:900px){ .product-grid{grid-template-columns:1fr;} }
+  .product-card{
+    background:var(--bg-panel);
+    padding:30px 26px;
+  }
+  .product-card .pid{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px; color:var(--copper); letter-spacing:0.1em;
+    margin-bottom:14px; display:block;
+  }
+  .product-card h3{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:19px; font-weight:600; margin-bottom:10px;
+  }
+  .product-card p{
+    font-size:13.5px; color:var(--text-dim); line-height:1.65;
+    margin-bottom:18px;
+  }
+  .product-specs{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px; color:var(--text-dim);
+    border-top:1px solid var(--line);
+    padding-top:14px;
+  }
+  .product-specs div{display:flex; justify-content:space-between; padding:3px 0;}
+  .product-specs span:last-child{color:var(--cyan);}
+
+  /* ---------- PROCESS ---------- */
+  .process-row{
+    margin-top:56px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:32px;
+  }
+  @media (max-width:860px){ .process-row{grid-template-columns:1fr; gap:40px;} }
+  .process-step{position:relative; padding-left:48px;}
+  .process-step .pnum{
+    position:absolute; left:0; top:0;
+    width:34px; height:34px; border-radius:50%;
+    border:1px solid var(--cyan);
+    color:var(--cyan);
+    font-family:'JetBrains Mono',monospace; font-size:13px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .process-step h4{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:16.5px; font-weight:600; margin-bottom:8px;
+  }
+  .process-step p{ font-size:13.5px; color:var(--text-dim); line-height:1.65; }
+
+  /* ---------- FIELD REPORTS ---------- */
+  .reports-grid{
+    margin-top:52px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+  }
+  @media (max-width:900px){ .reports-grid{grid-template-columns:1fr;} }
+  .report-card{
+    border:1px solid var(--line);
+    background:var(--bg-panel);
+    padding:24px;
+  }
+  .report-card .log-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px; color:var(--text-dim);
+    letter-spacing:0.08em;
+    margin-bottom:14px;
+    display:flex; justify-content:space-between;
+  }
+  .report-card .log-tag .status{color:var(--cyan);}
+  .report-card p{
+    font-size:14px; line-height:1.7; color:var(--text);
+    margin-bottom:14px;
+  }
+  .report-card .who{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px; color:var(--text-dim);
+  }
+
+  /* ---------- WAITLIST ---------- */
+  .waitlist{
+    text-align:center;
+  }
+  .waitlist .section-title, .waitlist .section-desc{margin-left:auto; margin-right:auto;}
+  .waitlist-form{
+    margin-top:36px;
+    display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
+    max-width:480px; margin-left:auto; margin-right:auto;
+  }
+  .waitlist-form input[type=email]{
+    flex:1; min-width:220px;
+    padding:14px 16px;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    border-radius:2px;
+  }
+  .waitlist-form input[type=email]::placeholder{color:var(--text-dim);}
+  .waitlist-status{
+    margin-top:16px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    color:var(--cyan);
+    min-height:18px;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    border-top:1px solid var(--line);
+    padding:28px clamp(20px,6vw,80px);
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:12px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--text-dim);
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">NERVE <span class="tm">SYNTH-AUG</span></div>
+  <div class="nav-links">
+    <a href="#products">PRODUCTS</a>
+    <a href="#process">PROCESS</a>
+    <a href="#reports">FIELD REPORTS</a>
+    <a href="#waitlist">WAITLIST</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-copy">
+    <div class="eyebrow">Synthetic Augmentation</div>
+    <h1>Your body, <em>extended</em>.<br>Not replaced.</h1>
+    <p>NERVE builds neural-synthetic limbs and sensory augments that integrate with your own nervous system — engineered like instruments, fitted like prosthetics, felt like nothing at all.</p>
+    <div class="hero-ctas">
+      <button class="btn-primary" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Request a fitting</button>
+      <button class="btn-secondary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">View product line</button>
+    </div>
+    <div class="hero-spec-strip">
+      <div><span class="num">0.3s</span><span class="label">SIGNAL LATENCY</span></div>
+      <div><span class="num">12K+</span><span class="label">UNITS FITTED</span></div>
+      <div><span class="num">Mk.III</span><span class="label">CURRENT GEN</span></div>
+    </div>
+  </div>
+
+  <div class="hero-diagram">
+    <svg viewBox="0 0 640 660" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Exploded technical diagram of a synthetic hand">
+      <!-- corner crosshairs -->
+      <g stroke="#1c2024" stroke-width="1">
+        <line x1="20" y1="10" x2="20" y2="40"/><line x1="5" y1="25" x2="35" y2="25"/>
+        <line x1="620" y1="10" x2="620" y2="40"/><line x1="605" y1="25" x2="635" y2="25"/>
+      </g>
+      <text x="20" y="60" font-family="JetBrains Mono" font-size="10" fill="#8b9197" letter-spacing="1">FIG. 04 — MANUS MK.III / EXPLODED</text>
+
+      <!-- dashed connectors -->
+      <g stroke="#2a3036" stroke-width="1" stroke-dasharray="3 4" fill="none">
+        <line x1="250" y1="347" x2="250" y2="440"/>
+        <line x1="292" y1="302" x2="292" y2="440"/>
+        <line x1="334" y1="277" x2="334" y2="440"/>
+        <line x1="376" y1="317" x2="376" y2="440"/>
+        <line x1="310" y1="550" x2="310" y2="570"/>
+      </g>
+      <g stroke="#3a3128" stroke-width="1" stroke-dasharray="3 4" fill="none">
+        <line x1="195" y1="446" x2="195" y2="500"/>
+      </g>
+
+      <!-- palm -->
+      <rect x="230" y="440" width="160" height="110" rx="18" fill="#0c0e10" stroke="#5eead4" stroke-width="1.3"/>
+      <line x1="230" y1="495" x2="390" y2="495" stroke="#1c2024" stroke-width="1"/>
+
+      <!-- wrist -->
+      <rect x="255" y="570" width="110" height="55" rx="14" fill="#0c0e10" stroke="#c8895a" stroke-width="1.3"/>
+
+      <!-- thumb (angled group) -->
+      <g transform="rotate(-32 195 500)">
+        <rect x="180" y="386" width="30" height="60" rx="8" fill="#0c0e10" stroke="#5eead4" stroke-width="1.1"/>
+        <rect x="183" y="330" width="24" height="42" rx="7" fill="#0c0e10" stroke="#5eead4" stroke-width="1.1"/>
+      </g>
+
+      <!-- pinky -->
+      <rect x="234" y="273" width="32" height="74" rx="8" fill="#0c0e10" stroke="#5eead4" stroke-width="1.1"/>
+      <rect x="236.5" y="202" width="27" height="58" rx="7" fill="#0c0e10" stroke="#5eead4" stroke-width="1.1"/>
+      <rect x="239" y="140" width="22" height="46" rx="6" fill="#0c0e10" stroke="#5eead4" stroke-width="1.1"/>
+
+      <!-- ring -->
+      <rect x="276" y="228" width="32" height="74" rx="8" fill="#0c0e10" stroke="#5eead4" stroke-width="1.1"/>
+      <rect x="278.5" y="157" width="27" height="58" rx="7" fill="#0c0e10" stroke="#5eead4" stroke-width="1.1"/>
+      <rect x="281" y="95" width="22" height="46" rx="6" fill="#0c0e10" stroke="#5eead4" stroke-width="1.1"/>
+
+      <!-- middle -->
+      <rect x="318" y="203" width="32" height="74" rx="8" fill="#0c0e10" stroke="#8b5cf6" stroke-width="1.3"/>
+      <rect x="320.5" y="132" width="27" height="58" rx="7" fill="#0c0e10" stroke="#8b5cf6" stroke-width="1.3"/>
+      <rect x="323" y="70" width="22" height="46" rx="6" fill="#0c0e10" stroke="#8b5cf6" stroke-width="1.3"/>
+
+      <!-- index -->
+      <rect x="360" y="243" width="32" height="74" rx="8" fill="#0c0e10" stroke="#5eead4" stroke-width="1.1"/>
+      <rect x="362.5" y="172" width="27" height="58" rx="7" fill="#0c0e10" stroke="#5eead4" stroke-width="1.1"/>
+      <rect x="365" y="110" width="22" height="46" rx="6" fill="#0c0e10" stroke="#5eead4" stroke-width="1.1"/>
+
+      <!-- callout: tip sensor -->
+      <circle cx="334" cy="93" r="9" fill="none" stroke="#8b5cf6" stroke-width="1"/>
+      <text x="334" y="97" font-family="JetBrains Mono" font-size="9" fill="#8b5cf6" text-anchor="middle">01</text>
+      <line x1="345" y1="93" x2="420" y2="60" stroke="#3a3340" stroke-width="1"/>
+      <text x="425" y="56" font-family="JetBrains Mono" font-size="10.5" fill="#e9eaeb">SYNTH-TIP SENSOR</text>
+      <text x="425" y="70" font-family="JetBrains Mono" font-size="9" fill="#8b9197">PRESSURE + THERMAL ARRAY</text>
+
+      <!-- callout: joint -->
+      <circle cx="334" cy="240" r="9" fill="none" stroke="#8b5cf6" stroke-width="1"/>
+      <text x="334" y="244" font-family="JetBrains Mono" font-size="9" fill="#8b5cf6" text-anchor="middle">02</text>
+      <line x1="349" y1="240" x2="460" y2="225" stroke="#3a3340" stroke-width="1"/>
+      <text x="465" y="221" font-family="JetBrains Mono" font-size="10.5" fill="#e9eaeb">TORQUE-FEEDBACK JOINT</text>
+      <text x="465" y="235" font-family="JetBrains Mono" font-size="9" fill="#8b9197">0.3s LATENCY TO CORTEX LINK</text>
+
+      <!-- callout: palm -->
+      <circle cx="270" cy="495" r="9" fill="none" stroke="#5eead4" stroke-width="1"/>
+      <text x="270" y="499" font-family="JetBrains Mono" font-size="9" fill="#5eead4" text-anchor="middle">03</text>
+      <line x1="255" y1="495" x2="120" y2="470" stroke="#2a3a38" stroke-width="1"/>
+      <text x="20" y="466" font-family="JetBrains Mono" font-size="10.5" fill="#e9eaeb">NEURAL RELAY PALM</text>
+      <text x="20" y="480" font-family="JetBrains Mono" font-size="9" fill="#8b9197">256-CHANNEL SIGNAL ROUTING</text>
+
+      <!-- callout: wrist -->
+      <circle cx="310" cy="597" r="9" fill="none" stroke="#c8895a" stroke-width="1"/>
+      <text x="310" y="601" font-family="JetBrains Mono" font-size="9" fill="#c8895a" text-anchor="middle">04</text>
+      <line x1="295" y1="597" x2="120" y2="615" stroke="#3a3128" stroke-width="1"/>
+      <text x="20" y="611" font-family="JetBrains Mono" font-size="10.5" fill="#e9eaeb">BIO-INTERFACE CUFF</text>
+      <text x="20" y="625" font-family="JetBrains Mono" font-size="9" fill="#8b9197">SKIN-CONFORMING CONTACT MESH</text>
+    </svg>
+  </div>
+</header>
+
+<section id="products">
+  <div class="eyebrow">Product Line</div>
+  <h2 class="section-title">Three augments. One nervous system.</h2>
+  <p class="section-desc">Each unit is fitted individually and calibrated to your own neural signature — no two installs run the same firmware.</p>
+
+  <div class="product-grid">
+    <div class="product-card">
+      <span class="pid">UNIT 01</span>
+      <h3>Manus Mk.III</h3>
+      <p>Full hand and forearm replacement with independent finger torque feedback and pressure-sensitive synth-tips.</p>
+      <div class="product-specs">
+        <div><span>LATENCY</span><span>0.3s</span></div>
+        <div><span>GRIP FORCE</span><span>180N</span></div>
+        <div><span>BATTERY</span><span>14 DAYS</span></div>
+      </div>
+    </div>
+    <div class="product-card">
+      <span class="pid">UNIT 02</span>
+      <h3>Ocular Mk.II</h3>
+      <p>Subdermal optical relay with low-light amplification and a heads-up data layer rendered directly onto the retina.</p>
+      <div class="product-specs">
+        <div><span>FIELD OF VIEW</span><span>140°</span></div>
+        <div><span>ZOOM</span><span>8x</span></div>
+        <div><span>BATTERY</span><span>30 DAYS</span></div>
+      </div>
+    </div>
+    <div class="product-card">
+      <span class="pid">UNIT 03</span>
+      <h3>Cortex Link</h3>
+      <p>The relay layer all NERVE units speak to — a coin-sized neural bridge fitted once, upgraded forever.</p>
+      <div class="product-specs">
+        <div><span>CHANNELS</span><span>256</span></div>
+        <div><span>UNITS SUPPORTED</span><span>6</span></div>
+        <div><span>BATTERY</span><span>90 DAYS</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="process">
+  <div class="eyebrow">How It's Fitted</div>
+  <h2 class="section-title">Three appointments. No surgery theatrics.</h2>
+  <p class="section-desc">The process is closer to bespoke tailoring than it is to traditional prosthetics.</p>
+
+  <div class="process-row">
+    <div class="process-step">
+      <div class="pnum">01</div>
+      <h4>Scan</h4>
+      <p>A full neuromuscular map of the residual limb or sensory pathway, taken in a single 40-minute session.</p>
+    </div>
+    <div class="process-step">
+      <div class="pnum">02</div>
+      <h4>Fit</h4>
+      <p>Your unit is milled to the scan and fitted with a local anesthetic — most clients leave the same day.</p>
+    </div>
+    <div class="process-step">
+      <div class="pnum">03</div>
+      <h4>Calibrate</h4>
+      <p>Two weeks of guided signal training while the Cortex Link learns the shape of your intent.</p>
+    </div>
+  </div>
+</section>
+
+<section id="reports">
+  <div class="eyebrow">Field Reports</div>
+  <h2 class="section-title">Logged from the field, not a press kit.</h2>
+  <p class="section-desc">Anonymized notes pulled from client calibration logs.</p>
+
+  <div class="reports-grid">
+    <div class="report-card">
+      <div class="log-tag"><span>LOG 0291</span><span class="status">CALIBRATED</span></div>
+      <p>"Forgot it was synthetic by day nine. The grip feedback is the part nobody warns you about — you flinch at things again."</p>
+      <div class="who">MANUS MK.III — 4 MONTHS IN</div>
+    </div>
+    <div class="report-card">
+      <div class="log-tag"><span>LOG 0188</span><span class="status">CALIBRATED</span></div>
+      <p>"Low-light mode changed how I read a room at night. Took three sessions to stop noticing the HUD layer, now I miss it when it's off."</p>
+      <div class="who">OCULAR MK.II — 11 MONTHS IN</div>
+    </div>
+    <div class="report-card">
+      <div class="log-tag"><span>LOG 0354</span><span class="status">CALIBRATING</span></div>
+      <p>"Cortex Link install was the easy part. Re-learning to trust a hand I can't fully feel pain through — that's still in progress."</p>
+      <div class="who">CORTEX LINK — 3 WEEKS IN</div>
+    </div>
+  </div>
+</section>
+
+<section id="waitlist" class="waitlist">
+  <div class="eyebrow" style="justify-content:center;">Status: Limited Fitting Slots</div>
+  <h2 class="section-title">Join the fitting waitlist.</h2>
+  <p class="section-desc">We onboard in small cohorts so every calibration gets full attention. Leave your email and we'll reach out when a slot opens.</p>
+  <form class="waitlist-form" onsubmit="event.preventDefault(); document.getElementById('wl-status').textContent='Added to the waitlist — check your inbox for a confirmation.'; this.reset();">
+    <input type="email" required placeholder="you@email.com" aria-label="Email address">
+    <button type="submit" class="btn-primary">Join waitlist</button>
+  </form>
+  <div id="wl-status" class="waitlist-status"></div>
+</section>
+
+<footer>
+  <span>© NERVE SYNTH-AUG — CONCEPT BRAND</span>
+  <span>BUILT FOR TECHFEST, IIT BOMBAY — WEB DEVELOPMENT</span>
+</footer>
+
+</body>
+</html>
