@@ -2,7 +2,7 @@
 
 A cyborg-themed responsive landing page built for **Techfest, IIT Bombay** (Web Development domain — *Cyborg-Themed Landing Page Development*).
 
-🔗 **Live demo:** _add your GitHub Pages link here once enabled_
+🔗 **Live demo:** [http://chiragpoddar007.github.io/nerve-cyborg-landing-page](https://chiragpoddar007.github.io/Nerve-Cyborg-Landing-Page/)
 
 ![status](https://img.shields.io/badge/status-concept_build-5eead4) ![type](https://img.shields.io/badge/type-single--file_HTML-8b5cf6)
 
@@ -42,10 +42,6 @@ git clone https://github.com/chiragpoddar007/nerve-cyborg-landing-page.git
 cd nerve-cyborg-landing-page
 
 start index.html
-
-## Live Demo
-
-Url - [http://chiragpoddar007.github.io/nerve-cyborg-landing-page](https://chiragpoddar007.github.io/Nerve-Cyborg-Landing-Page/)
 
 ## Design notes
 
